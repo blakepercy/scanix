@@ -1,0 +1,58 @@
+#!/bin/bash
+
+source ~/scanix/lib/log4bash
+
+# Use > 1 to consume two arguments per pass in the loop (e.g. each
+# argument has a corresponding value to go with it).
+# Use > 0 to consume one or more arguments per pass in the loop (e.g.
+# some arguments don't have a corresponding value to go with it such
+# as in the --default example).
+while [[ $# > 0 ]]
+do
+key="$1"
+
+case $key in
+    -e|--expression)
+    EXPRESSION="$2"
+    shift # past argument
+    ;;
+    -s|--searchpath)
+    SEARCHPATH="$2"
+    shift # past argument
+    ;;
+    -k|--keyfile)
+    KEYFILE="$2"
+    shift # past argument
+    ;;
+    --default)
+    DEFAULT=YES
+    ;;
+    *)
+            # unknown option
+    ;;
+esac
+shift # past argument or value
+done
+
+#echo EXPRESSION  = "${EXPRESSION}"
+#echo SEARCH PATH     = "${SEARCHPATH}"
+#echo KEY FILE    = "${KEYFILE}"
+#echo DEFAULT = "${DEFAULT}"
+
+if [[ -n $1 ]]; then
+    echo "Last argument specified as non-opt/last argument:"
+    echo "$1"
+fi
+
+
+# Handle the piped input, line-by-line.
+cat | 
+{
+	while read line; do
+		if [[ -n $EXPRESSION ]]; then
+			echo $line | grep --silent -i -E "($EXPRESSION)" && log_error "$line" || log "$line"
+		fi
+	done
+}
+
+

@@ -1,0 +1,6 @@
+Scanix is a suite of simple tools that can be used to monitor, test and diagnose software systems.
+
+Scanix is composed of the following components:
+  * rtail      - perform a 'tail -f' upon a file on a remote system
+  * kwalarm    - key word alarm; raise an alarm if a keyword is encountered
+  * 

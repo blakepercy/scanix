@@ -1,0 +1,62 @@
+#!/bin/bash
+
+
+while [[ $# > 0 ]]
+do
+key="$1"
+
+case $key in
+    -f|--file)
+    FILE="$2"
+    shift # past argument
+    ;;
+    -p|--password)
+    PASS="$2"
+    shift
+    ;;
+    -u|--userhost)
+    USERHOST="$2"
+    shift
+    ;;
+    -h|--help)
+    HELP=true
+    shift # past argument
+    ;;
+    -v|--verbose)
+    VERB=true
+    shift
+    ;;
+    --default)
+    DEFAULT=YES
+    ;;
+    *)
+           # unknown option
+    ;;
+esac
+shift # past argument or value
+done
+
+echo FILE  = "${FILE}"
+echo PASS  = "${PASS}"
+echo USERHOST  = "${USERHOST}"
+
+if $HELP; then
+    echo ""
+    echo -e "rtail - Remote Tail - run a tail command upon a remote machine for the given file"
+    echo -e "  Usage: rtail -f file -u user@host -p password"
+    echo ""
+fi
+
+sshpass -p "$PASS" ssh "$USERHOST" "tail -f $FILE"
+
+# Handle the piped input, line-by-line.
+#cat | 
+#{
+#	while read line; do
+#		if [[ -n $EXPRESSION ]]; then
+#			echo $line | grep --silent -i -E "($EXPRESSION)" && log_error "$line" || if $VERB; then log "$line"; fi
+#		fi
+#	done
+#}
+
+

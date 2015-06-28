@@ -17,7 +17,8 @@ SCRIPT_NAME="${SCRIPT_NAME##/*/}"
 
 # This should probably be the right way - didn't have time to experiment though
 # declare -r INTERACTIVE_MODE="$([ tty --silent ] && echo on || echo off)"
-declare INTERACTIVE_MODE=$([ "$(uname)" == "CYGWIN_NT-6.1" ] && echo "on" || echo "off")
+#declare INTERACTIVE_MODE=$([ "$(uname)" == "CYGWIN_NT-6.1" ] && echo "on" || echo "off")
+declare INTERACTIVE_MODE="on"
 
 #--------------------------------------------------------------------------------------------------
 # Begin Help Section

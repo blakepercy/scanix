@@ -3,6 +3,7 @@
 source ~/scanix/lib/log4bash
 
 HELP=false
+VERB=false
 
 # Use > 1 to consume two arguments per pass in the loop (e.g. each
 # argument has a corresponding value to go with it).
@@ -30,6 +31,10 @@ case $key in
     HELP=true
     shift # past argument
     ;;
+    -v|--verbose)
+    VERB=true
+    shift
+    ;;
     --default)
     DEFAULT=YES
     ;;
@@ -45,7 +50,7 @@ done
 #echo KEY FILE    = "${KEYFILE}"
 #echo DEFAULT = "${DEFAULT}"
 
-if [[ "$HELP" = true ]]; then
+if $HELP; then
     echo ""
     echo -e "Keword Alarm - Raise an alarm if keyword(s) are found within an input stream"
     echo -e "  Usage: stream | kwalarm -e \"regular expression\""
@@ -63,7 +68,7 @@ cat |
 {
 	while read line; do
 		if [[ -n $EXPRESSION ]]; then
-			echo $line | grep --silent -i -E "($EXPRESSION)" && log_error "$line" || log "$line"
+			echo $line | grep --silent -i -E "($EXPRESSION)" && log_error "$line" || if $VERB; then log "$line"; fi
 		fi
 	done
 }

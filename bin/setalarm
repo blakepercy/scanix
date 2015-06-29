@@ -1,0 +1,47 @@
+#!/bin/bash
+
+
+while [[ $# > 0 ]]
+do
+key="$1"
+
+case $key in
+    -s|--systems-file)
+    SYSTEMS="$2"
+    shift # past argument
+    ;;
+    -k|--keywords-file)
+    KEYWORDS="$2"
+    shift
+    ;;
+    -h|--help)
+    HELP=true
+    shift # past argument
+    ;;
+    -v|--verbose)
+    VERB=true
+    shift
+    ;;
+    --default)
+    DEFAULT=YES
+    ;;
+    *)
+           # unknown option
+    ;;
+esac
+shift # past argument or value
+done
+
+echo SYSTEMS  = "${FILE}"
+echo KEYWORDS  = "${PASS}"
+
+if $HELP; then
+    echo ""
+    echo -e "setalarm - start monitoring remote log files and alarm for given keywords"
+    echo -e "  Usage: setalarm -s \"file of systems to monitor\" -k \"file of keywords to alarm upon\""
+    echo ""
+fi
+
+
+
+

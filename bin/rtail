@@ -47,7 +47,7 @@ if $HELP; then
     echo ""
 fi
 
-sshpass -p "$PASS" ssh "$USERHOST" "tail -f $FILE"
+sshpass -p "$PASS" ssh -oStrictHostKeyChecking=no "$USERHOST" "tail -f $FILE"
 
 # Handle the piped input, line-by-line.
 #cat | 

@@ -96,7 +96,7 @@ log_speak()     {
 }
 
 log_success()   { log "$1" "SUCCESS" "${LOG_SUCCESS_COLOR}"; }
-log_error()     { log "$1" "ERROR" "${LOG_ERROR_COLOR}"; log_speak "$1"; }
+log_error()     { log "$1" "ALARM" "${LOG_ERROR_COLOR}"; log_speak "$1"; }
 log_warning()   { log "$1" "WARNING" "${LOG_WARN_COLOR}"; }
 log_debug()     { log "$1" "DEBUG" "${LOG_DEBUG_COLOR}"; }
 log_captains()  {

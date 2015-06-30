@@ -36,9 +36,9 @@ esac
 shift # past argument or value
 done
 
-echo FILE  = "${FILE}"
-echo PASS  = "${PASS}"
-echo USERHOST  = "${USERHOST}"
+#echo FILE  = "${FILE}"
+#echo PASS  = "${PASS}"
+#echo USERHOST  = "${USERHOST}"
 
 if $HELP; then
     echo ""
@@ -47,7 +47,7 @@ if $HELP; then
     echo ""
 fi
 
-sshpass -p "$PASS" ssh -oStrictHostKeyChecking=no "$USERHOST" "tail -f $FILE"
+sshpass -p "$PASS" ssh -oStrictHostKeyChecking=no -C "$USERHOST" "tail -F $FILE"
 
 # Handle the piped input, line-by-line.
 #cat | 

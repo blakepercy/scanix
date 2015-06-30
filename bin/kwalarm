@@ -27,6 +27,10 @@ case $key in
     KEYFILE="$2"
     shift # past argument
     ;;
+    -n|--name)
+    NAME="$2"
+    shift
+    ;;
     -h|--help)
     HELP=true
     shift # past argument
@@ -48,29 +52,29 @@ done
 #echo EXPRESSION  = "${EXPRESSION}"
 #echo SEARCH PATH     = "${SEARCHPATH}"
 #echo KEY FILE    = "${KEYFILE}"
+#echo NAME    = "${NAME}"
 #echo DEFAULT = "${DEFAULT}"
-
-if $HELP; then
-    echo ""
-    echo -e "Keword Alarm - Raise an alarm if keyword(s) are found within an input stream"
-    echo -e "  Usage: stream | kwalarm -e \"regular expression\""
-    echo ""
-fi
 
 if [[ -n $1 ]]; then
     echo "Last argument specified as non-opt/last argument:"
     echo "$1"
 fi
 
-
-# Handle the piped input, line-by-line.
-cat | 
-{
-	while read line; do
-		if [[ -n $EXPRESSION ]]; then
-			echo $line | grep --silent -i -E "($EXPRESSION)" && log_error "$line" || if $VERB; then log "$line"; fi
-		fi
-	done
-}
-
-
+if $HELP; then
+    echo ""
+    echo -e "Keword Alarm - Raise an alarm if keyword(s) are found within an input stream"
+    echo -e "  Usage: stream | kwalarm -e \"regular expression\""
+    echo ""
+else
+    # Handle the piped input, line-by-line.
+    cat | 
+    {
+        IFS=$'\n'
+        while read line; do
+            if [[ -n $EXPRESSION ]]; then
+                if [[ -n $NAME ]]; then line=$(printf "\t[%s] - %s" $NAME $line); fi
+                echo $line | grep --silent -i -E "($EXPRESSION)" && log_error "$line" || if $VERB; then log "$line"; fi
+            fi
+        done
+    }
+fi

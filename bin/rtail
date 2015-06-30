@@ -1,5 +1,6 @@
 #!/bin/bash
 
+HELP=false
 
 while [[ $# > 0 ]]
 do
@@ -45,18 +46,9 @@ if $HELP; then
     echo -e "rtail - Remote Tail - run a tail command upon a remote machine for the given file"
     echo -e "  Usage: rtail -f file -u user@host -p password"
     echo ""
+else
+    sshpass -p "$PASS" ssh -oStrictHostKeyChecking=no -C "$USERHOST" "tail -F $FILE"
 fi
 
-sshpass -p "$PASS" ssh -oStrictHostKeyChecking=no -C "$USERHOST" "tail -F $FILE"
-
-# Handle the piped input, line-by-line.
-#cat | 
-#{
-#	while read line; do
-#		if [[ -n $EXPRESSION ]]; then
-#			echo $line | grep --silent -i -E "($EXPRESSION)" && log_error "$line" || if $VERB; then log "$line"; fi
-#		fi
-#	done
-#}
 
 

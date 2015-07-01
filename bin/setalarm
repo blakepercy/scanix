@@ -54,11 +54,9 @@ else
     (
         IFS=','
         while read name host pass file; do
-	    rtail -f "$file" -u "$host" -p "$pass" | kwalarm -e "$regex" -n "$name" 
+	    rtail -f "$file" -u "$host" -p "$pass" | kwalarm -e "$regex" -n "$name" &
         done
     )
 
-    #done < "$SYSTEMS"
-    # cat /tmp/test_input_file | kwalarm -e "$regex" -n "test" -v
 fi
 

@@ -73,7 +73,8 @@ else
         while read line; do
             if [[ -n $EXPRESSION ]]; then
                 if [[ -n $NAME ]]; then line=$(printf "\t[%s] - %s" $NAME $line); fi
-                echo $line | grep --silent -i -E "($EXPRESSION)" && log_error "$line" || if $VERB; then log "$line"; fi
+                #echo $line | grep --silent -i -E "($EXPRESSION)" && log_error "$line\n" || if $VERB; then log "$line"; fi
+		echo $line | grep -i -v -E "(debug|info)" | grep --silent -i -E "($EXPRESSION)" && log_error "$line\n" || if $VERB; then log "$line"; fi
             fi
         done
     }

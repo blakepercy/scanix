@@ -47,7 +47,7 @@ if $HELP; then
     echo -e "  Usage: rtail -f file -u user@host -p password"
     echo ""
 else
-    sshpass -p "$PASS" ssh -oStrictHostKeyChecking=no -C "$USERHOST" "tail -F $FILE"
+    sshpass -p "$PASS" ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -C "$USERHOST" "tail -F $FILE"
 fi
 
 

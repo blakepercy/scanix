@@ -2,6 +2,7 @@
 
 source ~/scanix/lib/log4bash
 
+log="scanix.log"
 HELP=false
 VERB=false
 
@@ -76,9 +77,13 @@ else
             if [[ -n $EXPRESSION ]]; then
                 if [[ -n $NAME ]]; then line=$(printf "\t[%s] - %s" $NAME $line); fi
 		if [[ -n $EXCLUDES ]]; then 
-                    echo $line | grep -i -v -E "($EXCLUDES)" | grep --silent -i -E "($EXPRESSION)" && log_error "$line\n" || if $VERB; then log "$line"; fi
+		    echo $line | grep -i -v -E "($EXCLUDES)" | grep --silent -i -E "($EXPRESSION)" && \
+                        ( flock 200; log_error "$line\n" | tee -a "$log" ) 200>.scanix.lock \
+                    || if $VERB; then log "$line"; fi
                 else
-                    echo $line | grep --silent -i -E "($EXPRESSION)" && log_error "$line\n" || if $VERB; then log "$line"; fi
+		    echo $line | grep --silent -i -E "($EXPRESSION)" && \
+                        ( flock 200; log_error "$line\n" | tee -a "$log" ) 200>.scanix.lock \
+                    || if $VERB; then log "$line"; fi
                 fi
             fi
         done

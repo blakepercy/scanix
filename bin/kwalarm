@@ -19,13 +19,17 @@ case $key in
     EXPRESSION="$2"
     shift # past argument
     ;;
+    -x|--excludes)
+    EXCLUDES="$2"
+    shift
+    ;;
     -s|--searchpath)
     SEARCHPATH="$2"
     shift # past argument
     ;;
-    -k|--keyfile)
-    KEYFILE="$2"
-    shift # past argument
+    -n|--name)
+    NAME="$2"
+    shift
     ;;
     -h|--help)
     HELP=true
@@ -45,16 +49,12 @@ esac
 shift # past argument or value
 done
 
-#echo EXPRESSION  = "${EXPRESSION}"
-#echo SEARCH PATH     = "${SEARCHPATH}"
-#echo KEY FILE    = "${KEYFILE}"
-#echo DEFAULT = "${DEFAULT}"
-
-if $HELP; then
-    echo ""
-    echo -e "Keword Alarm - Raise an alarm if keyword(s) are found within an input stream"
-    echo -e "  Usage: stream | kwalarm -e \"regular expression\""
-    echo ""
+if $VERB; then
+    echo EXPRESSION  = "${EXPRESSION}"
+    echo EXCLUDES  = "${EXCLUDES}"
+    echo SEARCH PATH     = "${SEARCHPATH}"
+    echo NAME    = "${NAME}"
+    echo DEFAULT = "${DEFAULT}"
 fi
 
 if [[ -n $1 ]]; then
@@ -62,15 +62,26 @@ if [[ -n $1 ]]; then
     echo "$1"
 fi
 
-
-# Handle the piped input, line-by-line.
-cat | 
-{
-	while read line; do
-		if [[ -n $EXPRESSION ]]; then
-			echo $line | grep --silent -i -E "($EXPRESSION)" && log_error "$line" || if $VERB; then log "$line"; fi
-		fi
-	done
-}
-
+if $HELP; then
+    echo ""
+    echo -e "Keword Alarm - Raise an alarm if keyword(s) are found within an input stream"
+    echo -e "  Usage: stream | kwalarm -e \"regex of keywords\" -x \"regex of exclusions\" -n name"
+    echo ""
+else
+    # Handle the piped input, line-by-line.
+    cat | 
+    {
+        IFS=$'\n'
+        while read line; do
+            if [[ -n $EXPRESSION ]]; then
+                if [[ -n $NAME ]]; then line=$(printf "\t[%s] - %s" $NAME $line); fi
+		if [[ -n $EXCLUDES ]]; then 
+                    echo $line | grep -i -v -E "($EXCLUDES)" | grep --silent -i -E "($EXPRESSION)" && log_error "$line\n" || if $VERB; then log "$line"; fi
+                else
+                    echo $line | grep --silent -i -E "($EXPRESSION)" && log_error "$line\n" || if $VERB; then log "$line"; fi
+                fi
+            fi
+        done
+    }
+fi
 

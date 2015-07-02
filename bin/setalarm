@@ -1,0 +1,75 @@
+#!/bin/bash
+
+HELP=false
+VERB=false
+
+while [[ $# > 0 ]]
+do
+key="$1"
+
+case $key in
+    -s|--systems-file)
+    SYSTEMS="$2"
+    shift # past argument
+    ;;
+    -k|--keywords-file)
+    KEYWORDS="$2"
+    shift
+    ;;
+    -x|--exclude-file)
+    EXCLUDES="$2"
+    shift
+    ;;
+    -h|--help)
+    HELP=true
+    shift # past argument
+    ;;
+    -v|--verbose)
+    VERB=true
+    shift
+    ;;
+    --default)
+    DEFAULT=YES
+    ;;
+    *)
+           # unknown option
+    ;;
+esac
+shift # past argument or value
+done
+
+if $VERB; then
+    echo SYSTEMS  = "${SYSTEMS}"
+    echo KEYWORDS  = "${KEYWORDS}"
+    echo EXCLUDES  = "${EXCLUDES}"
+fi
+
+if $HELP; then
+    echo ""
+    echo -e "setalarm - start monitoring remote log files and alarm for given keywords"
+    echo -e "  Usage: setalarm -s \"file of systems to monitor\" -k \"file of keywords to alarm upon\" -x \"file of excluded keywords\""
+    echo ""
+else
+    regex=$(cat "$KEYWORDS" | tr '\n' ' ' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr ' ' '|')
+    if [[ -n $VERB ]]; then echo "REGEX = $regex"; fi
+
+    regexlds=$(cat "$EXCLUDES" | tr '\n' ' ' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr ' ' '|')
+    if [[ -n $VERB ]]; then echo "EXCLUDES = $regexlds"; fi
+
+    sys=$(cat "$SYSTEMS" | sed -e :a -e '/./,$!d;/^\n*$/{$d;N;};/\n$/ba')
+    if [[ -n $VERB ]]; then echo "SYS = $sys"; fi
+
+    echo "$sys" |
+    (
+        IFS=','
+        while read name host pass file; do
+            if [[ -n $regexlds ]]; then
+                rtail -f "$file" -u "$host" -p "$pass" -v | kwalarm -e "$regex" -x "$regexlds" -n "$name" &
+            else
+                rtail -f "$file" -u "$host" -p "$pass" | kwalarm -e "$regex" -n "$name" &
+            fi
+        done
+    )
+
+fi
+

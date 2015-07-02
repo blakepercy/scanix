@@ -64,9 +64,9 @@ else
         IFS=','
         while read name host pass file; do
             if [[ -n $regexlds ]]; then
-                rtail -f "$file" -u "$host" -p "$pass" -v | kwalarm -e "$regex" -x "$regexlds" -n "$name" &
+                rtail -f "$file" -u "$host" -p "$pass" -e "$regex" | kwalarm -e "$regex" -x "$regexlds" -n "$name" &
             else
-                rtail -f "$file" -u "$host" -p "$pass" | kwalarm -e "$regex" -n "$name" &
+                rtail -f "$file" -u "$host" -p "$pass" -e "$regex" | kwalarm -e "$regex" -n "$name" &
             fi
         done
     )

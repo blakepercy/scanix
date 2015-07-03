@@ -1,4 +1,5 @@
 #!/bin/bash
+set +e
 
 source ~/scanix/lib/log4bash
 
@@ -75,7 +76,7 @@ else
         IFS=$'\n'
         while read line; do
             if [[ -n $EXPRESSION ]]; then
-                if [[ -n $NAME ]]; then line=$(printf "\t[%s] - %s" $NAME $line); fi
+                if [[ -n $NAME ]]; then line=$(printf "\n[%s] - %s" $NAME $line); fi
 		if [[ -n $EXCLUDES ]]; then 
 		    echo $line | grep -i -v -E "($EXCLUDES)" | grep --silent -i -E "($EXPRESSION)" && \
                         ( flock 200; log_error "$line\n" | tee -a "$log" ) 200>.scanix.lock \

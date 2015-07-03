@@ -52,7 +52,7 @@ if $HELP; then
     echo ""
 else
     if [[ -n $EXPRESSION ]]; then
-    sshpass -p "$PASS" ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -C "$USERHOST" tail -F $FILE | grep -E "($EXPRESSION)"
+	sshpass -p "$PASS" ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -C "$USERHOST" tail -F $FILE | grep -i -E "($EXPRESSION)"
     else
         sshpass -p "$PASS" ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -C "$USERHOST" "tail -F $FILE"
     fi

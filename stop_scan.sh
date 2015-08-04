@@ -9,7 +9,7 @@ sys=$(cat "$SYSTEMS" | sed -e :a -e '/./,$!d;/^\n*$/{$d;N;};/\n$/ba')
 
 function rkill {
 	echo Stopping $1 - $2 - $3
-	sleep 1; sshpass -p "$2" ssh "$1" "kill -9 $3" &
+	sleep 1; sshpass -p "$2" ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "$1" "kill -9 $3 &> /dev/null" &> /dev/null &
 }
 
 echo "$sys" |

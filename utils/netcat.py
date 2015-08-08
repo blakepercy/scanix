@@ -137,7 +137,6 @@ class netcatcmd:
             client_socket.close()
             print "Client socket now closed"
     
-
     def server_loop(self):
         # if no target is defined, we listen on all interfaces
         if self.target is None:

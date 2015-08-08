@@ -1,4 +1,5 @@
 #!/bin/bash
+set +e
 
 HELP=false
 
@@ -17,6 +18,10 @@ case $key in
     ;;
     -u|--userhost)
     USERHOST="$2"
+    shift
+    ;;
+    -t|--port)
+    PORT="$2"
     shift
     ;;
     -h|--help)
@@ -40,14 +45,17 @@ done
 #echo FILE  = "${FILE}"
 #echo PASS  = "${PASS}"
 #echo USERHOST  = "${USERHOST}"
+#echo PORT  = "${PORT}"
 
 if $HELP; then
     echo ""
     echo -e "rtail - Remote Tail - run a tail command upon a remote machine for the given file"
-    echo -e "  Usage: rtail -f file -u user@host -p password"
+    echo -e "  Usage: rtail -f <file> -u <user@host> -p <password> -t <port>"
     echo ""
 else
-    sshpass -p "$PASS" ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -C "$USERHOST" "tail -F $FILE"
+    # this sleep helps when rtail is being used as part of a multi-process environment
+    sleep 1
+    sshpass -p "$PASS" ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -C "$USERHOST" -p "$PORT" "while ! tail -F $FILE; do sleep 1; done"
 fi
 
 

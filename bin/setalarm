@@ -1,4 +1,5 @@
 #!/bin/bash
+set +e
 
 HELP=false
 VERB=false
@@ -62,14 +63,19 @@ else
     echo "$sys" |
     (
         IFS=','
-        while read name host pass file; do
+        while read name host port pass file; do
             if [[ -n $regexlds ]]; then
-                rtail -f "$file" -u "$host" -p "$pass" -v | kwalarm -e "$regex" -x "$regexlds" -n "$name" &
+                file=$(eval echo $file)
+		echo "$file"
+		rtail -f "$file" -u "$host" -p "$pass" -t "$port" | kwalarm -e "$regex" -x "$regexlds" -n "$name" &
             else
-                rtail -f "$file" -u "$host" -p "$pass" | kwalarm -e "$regex" -n "$name" &
+                rtail -f "$file" -u "$host" -p "$pass" -t "$port" | kwalarm -e "$regex" -n "$name" &
             fi
         done
     )
+
+    # give the scipt time to esablish the connections before exiting this scipt
+    sleep 15
 
 fi
 

@@ -55,7 +55,7 @@ if $HELP; then
 else
     # this sleep helps when rtail is being used as part of a multi-process environment
     sleep 1
-    sshpass -p "$PASS" ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -C "$USERHOST" -p "$PORT" "while ! tail -F $FILE; do sleep 1; done"
+    sshpass -p "$PASS" ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -C "$USERHOST" -p "$PORT" "while ! tail -n0 -F $FILE; do sleep 1; done"
 fi
 
 

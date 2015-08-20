@@ -25,7 +25,7 @@ echo "$sys" |
 sleep 15
 
 # kill the local processes (may already be closed from the above closure)
-#pkill ssh
+pkill ssh
 pkill cat
 pkill tail
 pkill flock

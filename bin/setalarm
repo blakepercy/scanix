@@ -75,9 +75,9 @@ else
 	if [[ -n $LOCAL ]]; then
 		echo "Starting Local Scan for $LOCAL on $FILE"
 		if [[ -n $regexlds ]]; then
-			grep -i -E "($regex)" "$FILE" | grep -i -v -E "($regexlds)" | ( while read line; do echo -e "\e[0m[$LOCAL - $FILE]: \n\e[91;1m$line\n"; done; )
+			grep -i -r -E "($regex)" "$FILE" | grep -i -v -E "($regexlds)" | ( while read line; do echo -e "\e[0m[$LOCAL - $FILE]: \n\e[91;1m$line\n"; done; )
 		else
-			grep -i -E "($regex)" "$FILE" | ( while read line; do echo -e "\e[0m[$LOCAL - $FILE]: \n\e[91;1m$line\n"; done; )
+			grep -i -r -E "($regex)" "$FILE" | ( while read line; do echo -e "\e[0m[$LOCAL - $FILE]: \n\e[91;1m$line\n"; done; )
 		fi
 	else
 		echo "$sys" |

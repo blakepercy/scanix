@@ -77,15 +77,15 @@ else
         while read line; do
             if [[ -n $EXPRESSION ]]; then
                 if [[ -n $NAME ]]; then line=$(printf "\n[%s] - %s" $NAME $line); fi
-		if [[ -n $EXCLUDES ]]; then 
-		    echo $line | grep -i -v -E "($EXCLUDES)" | grep --silent -i -E "($EXPRESSION)" && \
-                        ( flock 200; log_error "$line\n" | tee -a "$log" ) 200>.scanix.lock \
-                    || if $VERB; then log "$line"; fi
-                else
-		    echo $line | grep --silent -i -E "($EXPRESSION)" && \
-                        ( flock 200; log_error "$line\n" | tee -a "$log" ) 200>.scanix.lock \
-                    || if $VERB; then log "$line"; fi
-                fi
+				if [[ -n $EXCLUDES ]]; then 
+					echo $line | grep -i -v -E "($EXCLUDES)" | grep --silent -i -E "($EXPRESSION)" && \
+						( flock 200; log_error "$line\n" | tee -a "$log" ) 200>.scanix.lock \
+						|| if $VERB; then log "$line"; fi
+				else
+					echo $line | grep --silent -i -E "($EXPRESSION)" && \
+						( flock 200; log_error "$line\n" | tee -a "$log" ) 200>.scanix.lock \
+						|| if $VERB; then log "$line"; fi
+				fi
             fi
         done
     }

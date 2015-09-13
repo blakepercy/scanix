@@ -1,6 +1,8 @@
 #!/bin/bash
 set +e
 
+source ~/scanix/lib/log4bash
+
 HELP=false
 VERB=false
 
@@ -19,6 +21,14 @@ case $key in
     ;;
     -x|--exclude-file)
     EXCLUDES="$2"
+    shift
+    ;;
+    -l|--local)
+    LOCAL="$2"
+    shift
+    ;;
+    -f|--file)
+    FILE="$2"
     shift
     ;;
     -h|--help)
@@ -43,6 +53,8 @@ if $VERB; then
     echo SYSTEMS  = "${SYSTEMS}"
     echo KEYWORDS  = "${KEYWORDS}"
     echo EXCLUDES  = "${EXCLUDES}"
+    echo LOCAL  = "${LOCAL}"
+    echo FILE  = "${FILE}"
 fi
 
 if $HELP; then
@@ -52,30 +64,39 @@ if $HELP; then
     echo ""
 else
     regex=$(cat "$KEYWORDS" | tr '\n' ' ' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr ' ' '|')
-    if [[ -n $VERB ]]; then echo "REGEX = $regex"; fi
+    if $VERB; then echo "REGEX = $regex"; fi
 
     regexlds=$(cat "$EXCLUDES" | tr '\n' ' ' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr ' ' '|')
-    if [[ -n $VERB ]]; then echo "EXCLUDES = $regexlds"; fi
+    if $VERB; then echo "EXCLUDES = $regexlds"; fi
 
     sys=$(cat "$SYSTEMS" | sed -e :a -e '/./,$!d;/^\n*$/{$d;N;};/\n$/ba')
-    if [[ -n $VERB ]]; then echo "SYS = $sys"; fi
+    if $VERB; then echo "SYS = $sys"; fi
 
-    echo "$sys" |
-    (
-        IFS=','
-        while read name host port pass file; do
-            if [[ -n $regexlds ]]; then
-                file=$(eval echo $file)
-		echo "$file"
-		rtail -f "$file" -u "$host" -p "$pass" -t "$port" | kwalarm -e "$regex" -x "$regexlds" -n "$name" &
-            else
-                rtail -f "$file" -u "$host" -p "$pass" -t "$port" | kwalarm -e "$regex" -n "$name" &
-            fi
-        done
-    )
-
-    # give the scipt time to esablish the connections before exiting this scipt
-    sleep 15
+	if [[ -n $LOCAL ]]; then
+		echo "Starting Local Scan for $LOCAL on $FILE"
+		if [[ -n $regexlds ]]; then
+			grep -i -E "($regex)" "$FILE" | grep -i -v -E "($regexlds)" | ( while read line; do echo -e "\e[0m[$LOCAL - $FILE]: \n\e[91;1m$line\n"; done; )
+		else
+			grep -i -E "($regex)" "$FILE" | ( while read line; do echo -e "\e[0m[$LOCAL - $FILE]: \n\e[91;1m$line\n"; done; )
+		fi
+	else
+		echo "$sys" |
+		(
+			IFS=','
+			while read name host port pass file; do
+				if [[ -n $regexlds ]]; then
+					file=$(eval echo $file)
+					echo "$file"
+					rtail -f "$file" -u "$host" -p "$pass" -t "$port" | kwalarm -e "$regex" -x "$regexlds" -n "$name" &
+				else
+					rtail -f "$file" -u "$host" -p "$pass" -t "$port" | kwalarm -e "$regex" -n "$name" &
+				fi
+			done
+		)
+		
+		# give the scipt time to esablish the connections before exiting this scipt
+		sleep 15
+	fi
 
 fi
 

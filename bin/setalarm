@@ -63,10 +63,10 @@ if $HELP; then
     echo -e "  Usage: setalarm -s \"file of systems to monitor\" -k \"file of keywords to alarm upon\" -x \"file of excluded keywords\""
     echo ""
 else
-    regex=$(cat "$KEYWORDS" | tr '\n' ' ' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr ' ' '|')
+    regex=$(cat "$KEYWORDS" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr '\n' '|')
     if $VERB; then echo "REGEX = $regex"; fi
 
-    regexlds=$(cat "$EXCLUDES" | tr '\n' ' ' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr ' ' '|')
+	regexlds=$(cat "$EXCLUDES" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr '\n' '|')
     if $VERB; then echo "EXCLUDES = $regexlds"; fi
 
     sys=$(cat "$SYSTEMS" | sed -e :a -e '/./,$!d;/^\n*$/{$d;N;};/\n$/ba')

@@ -1,2 +1,2 @@
 # scanix
-under construction
+Bash-based log scanner
